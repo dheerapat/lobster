@@ -6,7 +6,7 @@ import type {
   IAgentAdapter,
 } from "../interfaces/adapter";
 import { QueueManager } from "./queue-manager";
-import DiscordAdapter from "../adapters/channels/discord";
+import { DiscordInputAdapter, DiscordOutputAdapter } from "../adapters/channels/discord";
 import OpencodeAgent from "../adapters/agents/opencode/opencode";
 
 export class Kernel {
@@ -24,16 +24,18 @@ export class Kernel {
   async bootstrap() {
     console.log("🚀 Bootstrapping Lobster Kernel...");
 
-    const discordAdapter = new DiscordAdapter();
+    const discordInputAdapter = new DiscordInputAdapter();
+    const discordOutputAdapter = new DiscordOutputAdapter(discordInputAdapter.getClient());
     const opencodeAgent = new OpencodeAgent();
 
-    this.inputs.set(discordAdapter.name, discordAdapter);
-    this.outputs.set(discordAdapter.name, discordAdapter);
+    this.inputs.set(discordInputAdapter.name, discordInputAdapter);
+    this.outputs.set(discordOutputAdapter.name, discordOutputAdapter);
     this.agents.set(opencodeAgent.name, opencodeAgent);
 
-    discordAdapter.onMessage((msg) => this.handleIncomingMessage(msg));
+    discordInputAdapter.onMessage((msg: MessagePacket) => this.handleIncomingMessage(msg));
 
-    await discordAdapter.start();
+    await discordInputAdapter.start();
+    await discordOutputAdapter.start();
     await opencodeAgent.start();
 
     console.log("✅ Discord Adapter Started");
