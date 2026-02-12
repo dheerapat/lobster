@@ -46,6 +46,8 @@ export class QueueManager {
     }
 
     this.queues.add(name);
+
+    await this.refreshQueueDepth(name);
   }
 
   async enqueue<T>(queueName: string, data: T): Promise<string> {

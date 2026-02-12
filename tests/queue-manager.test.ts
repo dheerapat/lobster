@@ -166,7 +166,7 @@ describe("QueueManager", () => {
       await fs.writeFile(file2, '{"test":2}');
 
       const newQueueManager = new QueueManager(testBasePath);
-      await newQueueManager.refreshQueueDepth("existing-queue");
+      await newQueueManager.registerQueue("existing-queue");
       const depth = newQueueManager.getQueueDepth("existing-queue");
       expect(depth).toBe(2);
     });
@@ -205,7 +205,7 @@ describe("QueueManager", () => {
       await fs.writeFile(path.join(queueDir, ".gitkeep"), '');
 
       const newQueueManager = new QueueManager(testBasePath);
-      await newQueueManager.refreshQueueDepth("mixed-queue");
+      await newQueueManager.registerQueue("mixed-queue");
       const depth = newQueueManager.getQueueDepth("mixed-queue");
       expect(depth).toBe(2);
     });
